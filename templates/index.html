@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FastAPI Calculator</title>
+</head>
+<body>
+    <h1>Simple Calculator</h1>
+
+    <form action="/calculate" method="get">
+        <label>Number A:</label>
+        <input type="number" name="a" step="any" required><br><br>
+
+        <label>Number B:</label>
+        <input type="number" name="b" step="any" required><br><br>
+
+        <label>Operation:</label>
+        <select name="op">
+            <option value="add">Add</option>
+            <option value="sub">Subtract</option>
+            <option value="mul">Multiply</option>
+            <option value="div">Divide</option>
+        </select><br><br>
+
+        <button type="submit">Calculate</button>
+    </form>
+</body>
+</html>

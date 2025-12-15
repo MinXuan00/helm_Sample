@@ -1,30 +1,49 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: airflow
-  namespace: airflow
+  name: calculator-deployment
+  labels:
+    app: calculator
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
-      app: airflow
+      app: calculator
   template:
     metadata:
       labels:
-        app: airflow
+        app: calculator
     spec:
       containers:
-      - name: airflow
-        image: apache/airflow:2.10.3
-        imagePullPolicy: IfNotPresent
-        envFrom:
-        - configMapRef:
-            name: airflow-config
-        ports:
-        - containerPort: 8080
-        volumeMounts:
-        - name: airflow-db
-          mountPath: /opt/airflow
-      volumes:
-      - name: airflow-db
-        emptyDir: {}
+        - name: calculator
+          image: mxlow/calculator:latest  # <- replace with your image
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: calculator-service
+  labels:
+    app: calculator
+spec:
+  type: LoadBalancer   # change to ClusterIP for internal-only clusters
+  selector:
+    app: calculator
+  ports:
+    - protocol: TCP
+      port: 80        # external port
+      targetPort: 80  # container port
